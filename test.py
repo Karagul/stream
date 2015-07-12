@@ -15,7 +15,6 @@ def test():
 
 
 ''' Retrieves the required ID based off of the institution  name.
-
 Since you can get many institutions, name is expected to be a list
 of strings and a dict of key=name value=id composition is returned
 '''
@@ -33,4 +32,3 @@ def get_institution(name=""):
     fid = et.find("fid").text
     org = et.find("org").text
     url = et.find("url").text
-
