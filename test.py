@@ -1,53 +1,41 @@
 #! /usr/bin/env python
-import time, os
-import ofxhomeclient
+import time
+#import ofxhomeclient
 
 from argparse import ArgumentParser as ap
 from ofxclient import OFXClient as ofx
+from lxml import etree as lxml
 
 def main():
     args = parse_args()
-    test(args.inst, args.user, args.passwd)
+    print args
+    test(args.institution, args.user, args.passwd)
 
 def test(inst, user, passwd):
     dtstart = time.strftime("%Y%m%d",time.localtime(time.time()-31*86400))
-    dtnow = time.strftime("%Y%m%d",time.localtime())
+#    dtnow = time.strftime("%Y%m%d",time.localtime())
     client = ofx(inst, user, passwd)
-    print client.query(qtype="account", dtstart)
+    rawxml = client.query(qtype="account", dtstart=dtstart)
+    print 'Printing raw XML'
+    print rawxml
+    print '\n\n'
+    root = lxml.fromstring(rawxml)
+    print (lxml.tostring(root, prettyprint=True))
+
 
 
 def parse_args():
-    p = ap(decription="test OFX account query")
-    p.add_argument('-i', '--institution', dest='inst',
+    p = ap(description="test OFX account query")
+    p.add_argument('-i', '--institution',
                    action='store', type=str, required=True,
                    help='institution name, case insensitive')
-    p.add_argument('-u', '--user', dest='user',
+    p.add_argument('-u', '--user',
                    action='store', type=str, required=True,
-                   help='account name')
-    p.add_argument('-p', '--pass', dest='passwd',
-                   action=GetPassAction, type=str, required=True,
-                   help='account name')
+                   help='user name')
+    p.add_argument('-p', '--passwd',
+                   action='store', type=str, required=True,
+                   help='user password')
     return p.parse_args()
-
-class GetPassAction(ap.Action):
-    def __init__(self,
-             option_strings,
-             dest=None,
-             nargs=0,
-             default=None,
-             required=False,
-             type=None,
-             metavar=None,
-             help=None):
-        super(GetPassAction, self).__init__(
-                option_strings=option_strings,
-                dest=dest,
-                nargs=nargs,
-                default=default,
-                required=required,
-                metavar=metavar,
-                type=type,
-                help=help)
 
 if __name__ == '__main__':
     main()

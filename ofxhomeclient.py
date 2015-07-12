@@ -13,7 +13,7 @@ class OFXHomeClient:
     def query(self, query='', term='', debug=False):
         # p = {}
         # p[str(query)] = str(term)
-        r = requests.get(self.url, params={query,term})
+        r = requests.get(self.url, params={query : term})
         r.encoding = self.encoding
         if debug:
             print r.url
@@ -41,12 +41,12 @@ class OFXHomeClient:
         # finally, the data we were looking for
         if et.find('brokerid') != None:
             return {'fid'      : et.find('fid').text,
-                    'org'      : et.find('org').text,
+                    'fiorg'    : et.find('org').text,
                     'url'      : et.find('url').text,
                     'brokerid' : et.find('brokerid').text }
         else:
             return {'fid'      : et.find('fid').text,
-                    'org'      : et.find('org').text,
+                    'fiorg'    : et.find('org').text,
                     'url'      : et.find('url').text }
 
 #--- END OXFHomeClient Class -------------------------------------------#
