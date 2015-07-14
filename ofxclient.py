@@ -1,51 +1,39 @@
-#!/usr/bin/python
+# -*- coding: utf-8 -*-
+'''
+    finance.ofxhomeclient
+    ~~~~~~~~~~~~~~~~~~~~~
+
+    ofxhomeclient provides utility functions for interacting with
+    institutions using the OFX specification.
+
+    ofxhomeclient was originally derived from oxf.py found at
+    http://stuffbillhasdone.blogspot.com/2010/04/ofx-python.html,
+    originally from http://www.jongsma.org/ofx/ (no longer
+    available). It has been modified to meet my needs since.
+
+    TODO:
+    - break out ofx schema definition to other files
+    - remove ofxclient class and build functional derivatives
+
+    :copyright: (c) 2015 by Calvin Maguranis.
+    :license: BSD, see LICENSE for more details.
+
+'''
+
 import time, os
 import requests
+import ofxhomeclient
 
 from mixl import tag, field
-from ofxhomeclient import generate_config as gencfg
 
 join = str.join
 
 def _date():
     return time.strftime('%Y%m%d%H%M%S',time.localtime())
 
+# TODO: replace this with a python function
 def _genuuid():
     return os.popen('uuidgen').read().rstrip().upper()
-
-'''
-sites = {
-    'MYCreditUnion': {
-        'caps': [ 'SIGNON', 'BASTMT' ],
-        'fid': '31337',     # ^- this is what i added, for checking/savings/debit accounts- think 'bank statement'
-        'fiorg': 'MyCreditUnion',
-        'url': 'https://ofx.mycreditunion.org',
-        'bankid': '21325412453', # bank routing' #
-        },
-    'vanguard': {
-        'caps': [ 'SIGNON', 'INVSTMT'],
-        'fiorg': 'vanguard.com',
-        'url' : 'https://vesnc.vanguard.com/us/OfxDirectConnectServlet',
-        },
-    'schwab_brokerage': {
-        'caps': [ 'SIGNON', 'INVSTMT'],
-        'fiorg': 'SCHWAB>COM',
-        'url': 'https://ofx.schwab.com/cgi_dev/ofx_server',
-        },
-    'schwab_bank': {
-        'caps': [ 'SIGNON', 'BASTMT'],
-        'fid' : '101',
-        'fiorg': 'ISC',
-        'url': 'https://ofx.schwab.com/bankcgi_dev/ofx_server',
-        'bankid' : '121202211',
-        },
-    'edward_jones' : {
-        'caps' : [ 'SIGNON', 'INVSTMT'],
-        'fiorg' : 'www.edwardjones.com',
-        'url' : 'https://ofx.edwardjones.com',
-        }
-    }
-'''
 
 class OFXClient:
     '''Encapsulate an ofx client, config is a dict containing configuration'''
@@ -87,18 +75,20 @@ class OFXClient:
         req = tag('ACCTINFORQ',field('DTACCTUP',dtstart))
         return self._message('SIGNUP','ACCTINFO',req)
 
-#    # this is from _ccreq below and reading page 176 of the latest OFX doc.
-#    def _bareq(self, bankname, acctid, dtstart, accttype):
-#        config=self.config
-#        req = tag('STMTRQ',
-#            tag('BANKACCTFROM',
-#                field('BANKID',sites [str(bankname)] ['bankid']),
-#                    field('ACCTID',acctid),
-#                field('ACCTTYPE',accttype)),
-#            tag('INCTRAN',
-#                field('DTSTART',dtstart),
-#                field('INCLUDE','Y')))
-#        return self._message('BANK','STMT',req)
+    # this is from _ccreq below and reading page 176 of the latest OFX doc.
+    def _bareq(self, bankname, acctid, dtstart, accttype):
+        config=self.config
+        req = tag('STMTRQ',
+            tag('BANKACCTFROM',
+                field('BANKID',sites [str(bankname)] ['bankid']), # what's BANKID used for?
+                                                                  # it's labeled as just the
+                                                                  # bank routing number
+                    field('ACCTID',acctid),
+                field('ACCTTYPE',accttype)),
+            tag('INCTRAN',
+                field('DTSTART',dtstart),
+                field('INCLUDE','Y')))
+        return self._message('BANK','STMT',req)
 
     def _ccreq(self, acctid, dtstart):
         req = tag('CCSTMTRQ',
@@ -128,7 +118,7 @@ class OFXClient:
         return tag(msgType+'MSGSRQV1',
                     tag(trnType+'TRNRQ',
                          field('TRNUID',_genuuid()),
-                         field('CLTCOOKIE',self._cookie()),
+                         field('CLTCOOKIE',self._cookie()), # what is cookie used for?
                          request))
 
     def _header(self):
@@ -143,12 +133,12 @@ class OFXClient:
                              'NEWFILEUID:'+_genuuid(),
                              ''])
 
-#    def baQuery(self, acctid, dtstart, accttype):
-#        '''Bank account statement request'''
-#        return join('\r\n',[self._header(),
-#                            tag('OFX',
-#                                self._signOn(),
-#                                self._bareq(acctid, dtstart, accttype))])
+    def baQuery(self, acctid, dtstart, accttype):
+        '''Bank account statement request'''
+        return join('\r\n',[self._header(),
+                            tag('OFX',
+                                self._signOn(),
+                                self._bareq(acctid, dtstart, accttype))])
 
     def _ccQuery(self, acctid, dtstart):
         '''CC Statement request'''
@@ -196,26 +186,4 @@ class OFXClient:
         response = self._rawquery(qtype,dtstart)
         response = self._parseresponse(response)
         return response
-'''
-    def doQuery(self,query,name):
-        # N.B. urllib doesn't honor user Content-type, use urllib2
-        request = urllib2.Request(self.config['url'],
-                                  query,
-                                  { 'Content-type': 'application/x-ofx',
-                                    'Accept': '*/*, application/x-ofx'
-                                  })
-        if 1:
-            f = urllib2.urlopen(request)
-            response = f.read()
-            f.close()
-
-            f = file(name,'w')
-            f.write(response)
-            f.close()
-        else:
-                print request
-                print self.config['url'], query
-'''
-            # ...
-
 

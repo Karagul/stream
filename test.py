@@ -4,7 +4,7 @@ import time
 
 from argparse import ArgumentParser as ap
 from ofxclient import OFXClient as ofx
-from lxml import etree as lxml
+#from lxml import etree as lxml
 
 def main():
     args = parse_args()
@@ -18,11 +18,9 @@ def test(inst, user, passwd):
     rawxml = client.query(qtype="account", dtstart=dtstart)
     print 'Printing raw XML'
     print rawxml
-    print '\n\n'
-    root = lxml.fromstring(rawxml)
-    print (lxml.tostring(root, prettyprint=True))
-
-
+ #   print '\n\n'
+ #   root = lxml.fromstring(rawxml)
+ #   print (lxml.tostring(root, prettyprint=True))
 
 def parse_args():
     p = ap(description="test OFX account query")
