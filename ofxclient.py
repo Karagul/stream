@@ -38,7 +38,7 @@ def _genuuid():
 class OFXClient:
     '''Encapsulate an ofx client, config is a dict containing configuration'''
     def __init__(self, institution, user, password):
-        config = gencfg(institution)
+        config = ofxhomeclient.query_institution(institution)
         self.password = password
         self.user = user
         self.config = config
@@ -76,13 +76,11 @@ class OFXClient:
         return self._message('SIGNUP','ACCTINFO',req)
 
     # this is from _ccreq below and reading page 176 of the latest OFX doc.
-    def _bareq(self, bankname, acctid, dtstart, accttype):
+    def _bareq(self, acctid,routing_number,  dtstart, accttype):
         config=self.config
         req = tag('STMTRQ',
             tag('BANKACCTFROM',
-                field('BANKID',sites [str(bankname)] ['bankid']), # what's BANKID used for?
-                                                                  # it's labeled as just the
-                                                                  # bank routing number
+                field('BANKID', str(routing_number)),
                     field('ACCTID',acctid),
                 field('ACCTTYPE',accttype)),
             tag('INCTRAN',
@@ -133,12 +131,12 @@ class OFXClient:
                              'NEWFILEUID:'+_genuuid(),
                              ''])
 
-    def baQuery(self, acctid, dtstart, accttype):
+    def _bankQuery(self, acctid, routing_number, dtstart, accttype):
         '''Bank account statement request'''
         return join('\r\n',[self._header(),
                             tag('OFX',
                                 self._signOn(),
-                                self._bareq(acctid, dtstart, accttype))])
+                                self._bareq(acctid, routing_number, dtstart, accttype))])
 
     def _ccQuery(self, acctid, dtstart):
         '''CC Statement request'''
@@ -165,14 +163,15 @@ class OFXClient:
         xml = ''
         if qtype == 'account':
             xml = self._acctQuery(dtstart)
+#        elif qtype == 'bank':
+#            xml = self._bankQuery('', '', dtstart, 'CHECKING')
 #        elif qtype == 'creditcard':
 #            xml = self._ccQuery(dtstart)
 #        elif qtype == 'investment':
 #            xml = self._invstQuery(dtstart)
-
         headers = {'Content-Type'   : 'application/x-ofx',
-                   'Content-Length' : str(len(xml)),
-                   'Accept': '*/*, application/x-ofx'}
+                    'Content-Length' : str(len(xml)),
+                    'Accept': '*/*, application/x-ofx'}
         r = requests.post(self.config['url'], data=str(xml), headers=headers)
         return str(r.text)
 
