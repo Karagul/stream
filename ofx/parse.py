@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-    finance.ofx.ofxparse
+    finance.ofx.parse
     ~~~~~~~~~~~~~~~~
 
     A small utility for parsing ofx data grams.
@@ -53,7 +53,6 @@ class Tree():
         ''' Parses the OFX datagram string. '''
         candidates = {}
         for element in datagram:
-            print element
             node = None
             if self._isclosetag(element):
                 node = self._maketagnode(element)
@@ -88,7 +87,7 @@ class Tree():
                     # Add new opentag location to the tree list
                     self.tree.append(nodeposition)
                 else:
-                    print "close tag found before open tag, data is incomplete"
+                    return "close tag found before open tag, data is incomplete"
 
         # The tree has been built in reverse order since we keyed off the closetags.
         self.tree.reverse()
@@ -118,8 +117,7 @@ class Node():
         self.children.append(child)
 
     def show(self):
-        print 'type=' + self.etype + ' key=' + self.key + ' value=' + self.value
-        print self.children
+        return 'type='+self.etype+' key='+self.key+' value='+self.value
 
 # - End Node class ---------------
 
@@ -158,15 +156,4 @@ class DatagramIter():
 
 # - End DatagramIter Class -------------
 
-if __name__ == '__main__':
-    treestr = '<OFX><SIGNONMSGSRSV1><SONRS><STATUS><CODE>1<SEVERITY>uhoh<MESSAGE>blowingup</STATUS><STATUS><CODE>0<SEVERITY>INFO<MESSAGE>Success</STATUS><DTSERVER>20150714184633<LANGUAGE>ENG<FI><ORG>USAA<FID>24591</FI></SONRS></SIGNONMSGSRSV1></OFX>'
-
-    ofxtree = Tree(treestr)
-
-    print 'All nodes:'
-    for n in ofxtree.nodes:
-        n.show()
-
-    print '\n\nTags:'
-    for v in ofxtree.tree:
-        ofxtree.nodes[v].show()
+Parse = Tree
