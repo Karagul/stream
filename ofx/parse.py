@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-    finance.ofxparse
+    finance.ofx.ofxparse
     ~~~~~~~~~~~~~~~~
 
     A small utility for parsing ofx data grams.
@@ -10,10 +10,7 @@
 '''
 
 class Tree():
-    ''' Tree provides a tree representation of an OFX datagram.
-
-    Under the hood the tree is a list of lists
-    '''
+    ''' Tree provides a tree representation of an OFX datagram. '''
 
     def __init__(self, strgram):
         ''' Tree initialization objects
@@ -96,18 +93,18 @@ class Tree():
         # The tree has been built in reverse order since we keyed off the closetags.
         self.tree.reverse()
 
-
 # - End Tree Class -------------
 
-''' Custom node class for each element in an OFX datagram. i
-
-This class essentially wraps a tuple for:
-    - The type of element (field or tag)
-    - The key name of the element
-    - If a field, the data held in the element
-    - Otherwise, if a tag, a list of all children tags and fields
-'''
 class Node():
+    ''' Custom node class for each element in an OFX datagram.
+
+    This class essentially wraps a tuple for:
+        - The type of element (field or tag)
+        - The key name of the element
+        - If a field, the data held in the element
+        - Otherwise, if a tag, a list of all children tags and fields
+    '''
+
     def __init__(self, etype, key, value = ''):
         if (etype.find('tag') < 0 and etype != 'field'):
             raise ValueError
@@ -124,14 +121,18 @@ class Node():
         print 'type=' + self.etype + ' key=' + self.key + ' value=' + self.value
         print self.children
 
-''' Custom container for iterating over raw OFX datagrams. '''
+# - End Node class ---------------
+
 class DatagramIter():
+    ''' Custom container for iterating over raw OFX datagrams. '''
+
     def __init__(self,datagram):
         self.strgram = str(datagram)
         self.length = len(self.strgram)
         self.pos=0
 
-    def __iter__(self): return self
+    def __iter__(self):
+        return self
 
     def next(self):
         concat = self.strgram[self.pos:]
@@ -158,7 +159,6 @@ class DatagramIter():
 # - End DatagramIter Class -------------
 
 if __name__ == '__main__':
-    #dgstr = '<OFX><SIGNONMSGSRSV1><SONRS><STATUS><CODE>0<SEVERITY>INFO<MESSAGE>Success</STATUS><DTSERVER>20150714184633<LANGUAGE>ENG<FI><ORG>USAA<FID>24591</FI></SONRS></SIGNONMSGSRSV1><SIGNUPMSGSRSV1><ACCTINFOTRNRS><TRNUID>59D885C2-D259-4E1D-B88A-71CDDC025117<STATUS><CODE>0<SEVERITY>INFO<MESSAGE>Success</STATUS><CLTCOOKIE>4<ACCTINFORS><DTACCTUP>20150714120000<ACCTINFO><DESC>USAA SECURE CHECKING<BANKACCTINFO><BANKACCTFROM><BANKID>314074269<ACCTID>0051690446<ACCTTYPE>CHECKING</BANKACCTFROM><SUPTXDL>Y<XFERSRC>N<XFERDEST>N<SVCSTATUS>ACTIVE</BANKACCTINFO></ACCTINFO>'
     treestr = '<OFX><SIGNONMSGSRSV1><SONRS><STATUS><CODE>1<SEVERITY>uhoh<MESSAGE>blowingup</STATUS><STATUS><CODE>0<SEVERITY>INFO<MESSAGE>Success</STATUS><DTSERVER>20150714184633<LANGUAGE>ENG<FI><ORG>USAA<FID>24591</FI></SONRS></SIGNONMSGSRSV1></OFX>'
 
     ofxtree = Tree(treestr)

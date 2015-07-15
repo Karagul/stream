@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
-    finance.ofxbuild
-    ~~~~~~~~~~~~~~~~~~~~~
+    finance.ofx.build
+    ~~~~~~~~~~~~~~~~~
 
     A tiny utility for building ofx data grams, taken from oxf.py
     found at http://stuffbillhasdone.blogspot.com/2010/04/ofx-python.html,

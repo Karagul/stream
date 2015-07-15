@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-    finance.ofxhomeclient
+    finance.ofx.ofxhomeclient
     ~~~~~~~~~~~~~~~~~~~~~
 
     ofxhomeclient provides utility functions for interacting with
@@ -24,7 +24,7 @@ import time, os
 import requests
 import ofxhomeclient
 
-from mixl import tag, field
+from build import tag, field
 
 join = str.join
 
@@ -148,7 +148,7 @@ class OFXClient:
     def _acctQuery(self,dtstart):
         return join('\r\n',[self._header(),
                           tag('OFX',
-                               self._signOn(),
+                              self._signOn(),
                                self._acctreq(dtstart))])
 
     def _invstQuery(self, brokerid, acctid, dtstart):

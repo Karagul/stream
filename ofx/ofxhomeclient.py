@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-    finance.ofxhomeclient
+    finance.ofx.ofxhomeclient
     ~~~~~~~~~~~~~~~~~~~~~
 
     ofxhomeclient provides utility functions for interacting with the
