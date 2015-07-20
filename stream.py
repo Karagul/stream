@@ -1,20 +1,27 @@
 # -*- encoding: utf-8 -*-
 import time
+import os
 
 from ofx.ofxclient import OFXClient
 from ofx.parse import Parse
+
 from flask import Flask
+from flask.ext.security import Security, SQLAlchemyUserDatastore, \
+    UserMixin, RoleMixin, login_required
+
 app = Flask(__name__)
 
-app.config.from_envvar('FLASK_FINANCE_APP_CONFIG')
+app.config.from_envvar('FLASK_STREAM_APP_CONFIG')
 
-''' Import development institution, username and password tuple. '''
 def get_user_dev():
+    ''' Import development institution, username and password tuple. '''
     lst=[]
     with open('userdev') as cfg:
         lst = [v.strip('\n') for v in cfg]
-    print lst
     return lst
+
+def init_db():
+    ''' Initialize SQL database using SQLAlchemy'''
 
 @app.route('/')
 def frontpage():

@@ -36,7 +36,7 @@ def _genuuid():
     return os.popen('uuidgen').read().rstrip().upper()
 
 class OFXClient:
-    '''Encapsulate an ofx client, config is a dict containing configuration'''
+    ''' Encapsulate an ofx client, config is a dict containing configuration '''
     def __init__(self, institution, user, password):
         config = ofxhomeclient.query_institution(institution)
         self.password = password
@@ -54,7 +54,7 @@ class OFXClient:
         self.cookie += 1
         return str(self.cookie)
 
-    '''Generate signon message'''
+    ''' Generate signon message '''
     def _signOn(self):
         config = self.config
         fidata = [ field('ORG',config['fiorg']) ]
@@ -157,16 +157,15 @@ class OFXClient:
                                self._signOn(),
                                self._invstreq(brokerid, acctid,dtstart))])
 
-    ''' Returns the raw text response
-    '''
+    ''' Returns the raw text response '''
     def _rawquery(self, qtype, dtstart):
         xml = ''
         if qtype == 'account':
             xml = self._acctQuery(dtstart)
-#        elif qtype == 'bank':
-#            xml = self._bankQuery('', '', dtstart, 'CHECKING')
-#        elif qtype == 'creditcard':
-#            xml = self._ccQuery(dtstart)
+        elif qtype == 'bank':
+            xml = self._bankQuery('', '', dtstart, 'CHECKING')
+        elif qtype == 'creditcard':
+            xml = self._ccQuery('', dtstart)
 #        elif qtype == 'investment':
 #            xml = self._invstQuery(dtstart)
         headers = {'Content-Type'   : 'application/x-ofx',

@@ -3,7 +3,7 @@ import time
 #import ofxhomeclient
 
 from argparse import ArgumentParser as ap
-from ofxclient import OFXClient as ofx
+from ofx.ofxclient import OFXClient as ofx
 #from lxml import etree as lxml
 
 def main():
@@ -20,8 +20,8 @@ def test(inst, user, passwd):
 
     bankstatement = client.query(qtype='bank',dtstart=dtstart)
     print bankstatement
- #   root = lxml.fromstring(rawxml)
- #   print (lxml.tostring(root, prettyprint=True))
+#    ccstatement = client.query(qtype='creditcard', dtstart=dtstart)
+#    print ccstatement
 
 def parse_args():
     p = ap(description='test OFX account query')
