@@ -81,9 +81,6 @@ class Tree():
                     # All elements from opentag+1 to closetag-1 are children of this tag.
                     opentag.children = [c for c in self.nodes[nodeposition+1:]]
 
-                    # There's no need to keep the close tags
-                    self.nodes.pop()
-
                     # Add new opentag location to the tree list
                     self.tree.append(nodeposition)
                 else:
