@@ -6,12 +6,15 @@ from ofx.ofxclient import OFXClient
 from ofx.parse import Parse
 
 from flask import Flask
-from flask.ext.security import Security, SQLAlchemyUserDatastore, \
-    UserMixin, RoleMixin, login_required
+from flask.ext.sqlalchemy import SQLAlchemy
 
+# Flask setup
 app = Flask(__name__)
-
 app.config.from_envvar('FLASK_STREAM_APP_CONFIG')
+
+# SQLAlchemy setup
+db = SQLAlchemy(app)
+
 
 def get_user_dev():
     ''' Import development institution, username and password tuple. '''
@@ -21,7 +24,7 @@ def get_user_dev():
     return lst
 
 def init_db():
-    ''' Initialize SQL database using SQLAlchemy'''
+    ''' Initialize SQL database using SQLAlchemy '''
 
 @app.route('/')
 def frontpage():

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-    finance.ofx.parse
+    stream.ofx.parse
     ~~~~~~~~~~~~~~~~
 
     A small utility for parsing ofx data grams.
