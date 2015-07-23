@@ -16,15 +16,14 @@ def userdatamodel():
                     db.Column('user_email', db.String(120), db.ForeignKey('user.email')),
                     db.Column('userinstitution_id', db.Integer, db.ForeignKey('userinstitution.id')),
                     db.Column('transaction_account', db.String(12), db.ForeignKey('transaction.account')),
-                    db.Column('institution_id', db.Integer, db.ForeignKey('institution.id'))
-                )
+                    db.Column('institution_id', db.Integer, db.ForeignKey('institution.id')) )
 
 class User(db.Model):
     email = db.Column(db.String(120), primary_key=True)
     salt = db.Column(db.String(120), unique=True)
     hash = db.Column(db.string(120), unique=True)
     active = db.Column(db.Boolean())
-    confirmedat = db.Column(db.DateTime())
+    confirmed = db.Column(db.DateTime())
 
     def __init__(self, email, salt, hashfunc):
         self.email = email
