@@ -8,9 +8,9 @@ class LoginForm(Form):
     email = TextField('Email address', [Length(min=6, max=120), Required(), Email()])
     password = PasswordField('Password', [Length(min=8, max=20), Required()])
 
-class RegistrationFrom(LoginForm):
+class RegisterForm(LoginForm):
     name = StringField('Full Name', [
-        Required(), Length(min=2, max=10)
+        Required(), Length(min=2, max=120)
         ])
     confirm = PasswordField('Repeat password', [
         Length(min=8, max=20), Required(),

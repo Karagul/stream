@@ -8,7 +8,7 @@ class User(db.Model):
 
     name= db.Column(db.String(120))
     email = db.Column(db.String(120), primary_key=True)
-    password = db.Column(db.string(120), unique=True)
+    password = db.Column(db.String(120), unique=True)
     role = db.Column(db.SmallInteger, default=USER.USER)
     status = db.Column(db.SmallInteger, default=USER.NEW)
 

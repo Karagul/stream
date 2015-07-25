@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask import g, flash, redirect, url_for, request
 
-def requires_long(f):
+def requires_login(f):
     @wraps(f)
     def wrapped_function(*args, **kwargs):
         if g.user is None:
