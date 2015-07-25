@@ -3,55 +3,58 @@
 from flask import g, Blueprint, request, flash, render_template, session, redirect, url_for
 from werkzeug import check_password_hash, generate_password_hash
 
+from sqlalchemy.exc import IntegrityError
+
 from stream import db
-from stream.users.forms import RegisterForm, LoginForm
-from stream.users.models import User
-from stream.users.decorators import requires_login
+from stream.forms import RegisterForm, LoginForm
+from stream.database import User
+from stream.utils import requires_login
 
-user_bp = Blueprint('users', __name__, url_prefix='/users')
+mod = Blueprint('users', __name__)
 
-@user_bp.route('/me/')
+@mod.route('/')
+def index():
+    return redirect(url_for('general.index'))
+
+@mod.route('/<user>/profile/')
 @requires_login
-def home():
+def profile(user):
     return render_template('users/profile.html', user=g.user)
 
-@user_bp.before_request
+@mod.before_request
 def before_request():
     """ Pull user's profile from database before every request """
     g.user = None
     if 'user_email' in session:
-        print 'user_email found:', session['user_email']
         g.user = User.query.get(session['user_email'])
 
-@user_bp.route('/login/', methods=['GET', 'POST'])
+@mod.route('/logout/')
+def logout():
+    del session['user_email']
+    flash('logged out!')
+    return redirect(url_for('users.login'))
+
+@mod.route('/login/', methods=['GET', 'POST'])
 def login():
     """ Login form """
-    if 'user_email' in session:
+    if g.user is not None:
         # no need to go back to login if session already exists
-        return redirect(url_for('users.home'))
+        return redirect(url_for('users.profile', username=str(g.user.name.strip())))
 
     form = LoginForm(request.form)
-    # ensures data is valid but does not validate passwords
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         # use Werkzeug to validate a user's password
-        # TODO: change to flask-login/security
         if user and check_password_hash(user.password, form.password.data):
             # session is signed and is thus unmodifiable, store the email
             # for session identification
             session['user_email'] = user.email
             flash('Welcome %s!' % user.name)
-            return redirect(url_for('users.home'))
+            return redirect(url_for('users.profile', username=user.name))
         flash('Wrong email or password', 'error-message')
     return render_template('users/login.html', form=form)
 
-@user_bp.route('/logout/')
-def logout():
-    session.pop('user_email', None)
-    flash('logged out!')
-    return redirect(url_for('users.login'))
-
-@user_bp.route('/register/', methods=['GET', 'POST'])
+@mod.route('/register/', methods=['GET', 'POST'])
 def register():
     """ User registration form """
     form = RegisterForm(request.form)
@@ -60,12 +63,16 @@ def register():
         # add new user instance to database
         user = User(name=form.name.data, email=form.email.data,
                     password=generate_password_hash(form.password.data))
-        db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError:
+            flash('User already exists!')
+            return render_template('users/register.html', form=form)
 
         # log the user e-mail
         session['user_email'] = user.email
 
         flash('You are now registered!')
-        return redirect(url_for('users.home'))
+        return redirect(url_for('users.profile', username=user.name))
     return render_template('users/register.html', form=form)

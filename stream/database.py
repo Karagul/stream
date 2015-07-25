@@ -1,12 +1,12 @@
 # -*- encoding: utf8 -*-
 
 from stream import db
-from stream.users import constants as USER
+import stream.constants as USER
 
 class User(db.Model):
     __tablename__ = 'users_user'
 
-    name= db.Column(db.String(120))
+    name = db.Column(db.String(120))
     email = db.Column(db.String(120), primary_key=True)
     password = db.Column(db.String(120), unique=True)
     role = db.Column(db.SmallInteger, default=USER.USER)

@@ -51,5 +51,5 @@ def not_found(error):
 
 # This also implicitly imports our SQLAlchemy db instance and models
 # into namespace so that db.create_all() actually does something.
-from stream.users.views import user_bp as users_blueprint
-app.register_blueprint(users_blueprint)
+from stream.views import users
+app.register_blueprint(users.mod)
