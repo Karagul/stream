@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    {% from "macros.html" import render_userdb_entries %}
+    {% if g.user %}
+        <ul class="entries">
+            {{ render_userdb_entries(entries) }}
+        </ul>
+    {% else %}
+        <li><em>Not logged in! How did you get here?!</em>
+    {% endif %}
+    <div><a href="{{ url_for('users.profile') }}">Profile</a></div>
+    <div><a href="{{ url_for('users.logout') }}">Logout</a></div>
+{% endblock %}

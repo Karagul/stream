@@ -1,7 +1,7 @@
 
 {% extends "base.html" %}
 {% block content %}
-    {% from "forms/macros.html" import render_field %}
+    {% from "macros.html" import render_field %}
     <form method="POST" action="." class-"form">
         {{ form.csrf_token }}
         {{ render_field(form.email, class="input text") }}

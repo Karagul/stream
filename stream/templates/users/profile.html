@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-Profile! Hi {{ user.name }}!
-
-<div><a href="{{ url_for('users.logout') }}">Logout</a></div>
-
+    <h2>{{ user.name }}'s profile!</h2>
+    <div><a href="{{ url_for('users.database') }}">Database</a></div>
+    <div><a href="{{ url_for('users.logout') }}">Logout</a></div>
 {% endblock %}

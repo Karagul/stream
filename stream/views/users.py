@@ -16,10 +16,18 @@ mod = Blueprint('users', __name__)
 def index():
     return redirect(url_for('general.index'))
 
-@mod.route('/<user>/profile/')
+@mod.route('/profile/')
+@mod.route('/profile/<username>/')
 @requires_login
-def profile(user):
+def profile(username=None):
     return render_template('users/profile.html', user=g.user)
+
+@mod.route('/database/')
+@requires_login
+def database():
+    # get all database entries
+    entries = User.query.all()
+    return render_template('users/database.html', entries=entries)
 
 @mod.before_request
 def before_request():
@@ -29,6 +37,7 @@ def before_request():
         g.user = User.query.get(session['user_email'])
 
 @mod.route('/logout/')
+@requires_login
 def logout():
     del session['user_email']
     flash('logged out!')
@@ -39,7 +48,7 @@ def login():
     """ Login form """
     if g.user is not None:
         # no need to go back to login if session already exists
-        return redirect(url_for('users.profile', username=str(g.user.name.strip())))
+        return redirect(url_for('users.profile', username=g.user.name))
 
     form = LoginForm(request.form)
     if form.validate_on_submit():

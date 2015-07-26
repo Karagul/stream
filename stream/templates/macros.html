@@ -14,3 +14,17 @@
         {% endif %}
     </div>
 {% endmacro %}
+
+{% macro render_userdb_entries(entries) %}
+    <ul class="userdb_entry">
+            {% for entry in entries %}
+                <li><h2>{{ entry.name }}</h2>
+                {{ entry.email|safe }}
+                {{ entry.password|safe }}
+                {{ entry.role|safe }}
+                {{ entry.status|safe }}
+            {% else %}
+                <li><em>Database unpopulated.</em>
+            {% endfor %}
+    </ul>
+{% endmacro %}
