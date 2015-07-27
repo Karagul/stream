@@ -8,12 +8,6 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 db = SQLAlchemy(app)
-def userdatamodel():
-    return db.Table('finance_stream',
-                    db.Column('user_email', db.String(120), db.ForeignKey('user.email')),
-                    db.Column('userinstitution_id', db.Integer, db.ForeignKey('userinstitution.id')),
-                    db.Column('transaction_account', db.String(12), db.ForeignKey('transaction.account')),
-                    db.Column('institution_id', db.Integer, db.ForeignKey('institution.id')) )
 
 def install_secret_key(app, filename='secret_key'):
     """ Configure secret key from file in the instance directory.

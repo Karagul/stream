@@ -1,7 +1,7 @@
 .PHONY: clean-pyc clean-db
 
 
-all: clean-pyc clean-db
+all: clean-pyc
 
 clean: clean-pyc clean-db
 

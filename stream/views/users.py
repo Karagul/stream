@@ -1,14 +1,14 @@
 # -*- encoding: utf8 -*-
-
 from flask import g, Blueprint, request, flash, render_template, session, redirect, url_for
 from werkzeug import check_password_hash, generate_password_hash
-
-from sqlalchemy.exc import IntegrityError
 
 from stream import db
 from stream.forms import RegisterForm, LoginForm
 from stream.database import User
 from stream.utils import requires_login
+
+from sqlalchemy.sql import exists as sqlalch_exists
+from sqlalchemy.exc import IntegrityError
 
 mod = Blueprint('users', __name__)
 
@@ -36,7 +36,7 @@ def before_request():
     if 'user_email' in session:
         g.user = User.query.get(session['user_email'])
 
-@mod.route('/logout/')
+@mod.route('/logout/', methods=['GET'])
 @requires_login
 def logout():
     del session['user_email']
@@ -69,14 +69,21 @@ def register():
     form = RegisterForm(request.form)
 
     if form.validate_on_submit():
+        # Check if user already exists in database
+        exists = db.session.query(sqlalch_exists().where(
+                                  User.email==form.email.data)).scalar()
+        if exists:
+            flash('user already exists!')
+            return render_template('users/register.html', form=form)
+
         # add new user instance to database
         user = User(name=form.name.data, email=form.email.data,
                     password=generate_password_hash(form.password.data))
         try:
             db.session.add(user)
             db.session.commit()
-        except IntegrityError:
-            flash('User already exists!')
+        except:
+            flash('Unexpected error!')
             return render_template('users/register.html', form=form)
 
         # log the user e-mail
